@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <title>Movie Trivia Scorer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              950: '#0b1018'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-200 flex flex-col items-center justify-start min-h-screen p-4 sm:p-8">
+
+  <!-- ========== HEADING ========== -->
+  <h1 class="text-3xl sm:text-4xl font-bold text-sky-500 mb-8 flex items-center gap-2">
+    <!-- Trophy icon -->
+    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-.01L12 2z"/>
+    </svg>
+    Movie Trivia Scorer
+  </h1>
+
+  <!-- ========== NAME INPUT ========== -->
+  <section id="nameSection" class="w-full max-w-md">
+    <label class="block mb-2 font-medium text-slate-300">Your name</label>
+    <input id="nameInput" maxlength="20"
+           class="w-full bg-slate-800 border border-slate-700 rounded-md px-4 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500" />
+    <button id="startBtn"
+            class="mt-4 w-full bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-md py-2 transition">
+      <span class="flex items-center justify-center gap-2">
+        <!-- Play icon -->
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                clip-rule="evenodd"/>
+        </svg>
+        Loading questions...
+      </span>
+    </button>
+  </section>
+
+  <!-- ========== QUIZ ========== -->
+  <section id="quizSection" class="w-full max-w-md" hidden>
+    <p id="questionText" class="text-lg mb-4"></p>
+    <div id="choices" class="space-y-2"></div>
+    <p id="feedback" class="mt-4 font-semibold"></p>
+    <p id="progress" class="mt-2 text-sm text-slate-400"></p>
+  </section>
+
+  <!-- ========== RESULTS ========== -->
+  <section id="resultSection" class="w-full max-w-md text-center" hidden>
+    <h2 id="resultTitle" class="text-2xl font-bold text-sky-500 mb-4"></h2>
+    <button id="playAgainBtn"
+            class="bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-md px-4 py-2 transition">
+      <span class="flex items-center gap-2">
+        <!-- Refresh icon -->
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101A7.002 7.002 0 0112.05 4.43a1 1 0 111.415 1.414A5.002 5.002 0 006.05 5.845V8a1 1 0 11-2 0V3a1 1 0 011-1zm10.293 9.293a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L15 12.414V14a1 1 0 11-2 0v-2.586l-1.293 1.293a1 1 0 01-1.414-1.414l3-3zM4 10a5 5 0 000 10h8a5 5 0 000-10H4z"
+                clip-rule="evenodd"/>
+        </svg>
+        Play Again
+      </span>
+    </button>
+  </section>
+
+  <!-- ========== LEADERBOARD ========== -->
+  <section id="leaderboardSection" class="w-full max-w-md mt-8">
+    <h2 class="text-xl font-bold text-sky-500 mb-2">🏆 Leaderboard</h2>
+    <ol id="leaderboardList" class="space-y-1 text-sm"></ol>
+  </section>
+
+  <!-- ========== JS (same logic, tailwind classes added) ========== -->
+  <script>
+    /* ---------- CONFIG ---------- */
+    const API_BASE = window.location.origin;
+    const TOTAL_QUESTIONS = 10;
+    const POINTS_PER_CORRECT = 10;
+
+    /* ---------- QUESTION BANK ---------- */
+    let questions = [];
+
+    /* ---------- DOM ---------- */
+    const nameSection   = document.getElementById("nameSection");
+    const quizSection   = document.getElementById("quizSection");
+    const resultSection = document.getElementById("resultSection");
+    const nameInput     = document.getElementById("nameInput");
+    const startBtn      = document.getElementById("startBtn");
+    const questionText  = document.getElementById("questionText");
+    const choicesDiv    = document.getElementById("choices");
+    const feedback      = document.getElementById("feedback");
+    const progress      = document.getElementById("progress");
+    const resultTitle   = document.getElementById("resultTitle");
+    const playAgainBtn  = document.getElementById("playAgainBtn");
+    const leaderboard   = document.getElementById("leaderboardList");
+
+    /* ---------- STATE ---------- */
+    let currentSet = [];
+    let currentIndex = 0;
+    let score = 0;
+    let playerName = "";
+
+    /* ---------- INIT ---------- */
+    renderLeaderboard();
+    startBtn.onclick = startQuiz;
+    playAgainBtn.onclick = reset;
+    startBtn.disabled = true;
+
+    /* ---------- FUNCTIONS ---------- */
+    async function loadQuestions() {
+      try {
+        const response = await fetch('/api/questions');
+        questions = await response.json();
+        startBtn.disabled = false;
+        startBtn.innerHTML = `
+          <span class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
+            </svg>
+            Start Quiz
+          </span>
+        `;
+      } catch (error) {
+        console.error('Error loading questions:', error);
+        startBtn.innerHTML = 'Error loading questions';
+        startBtn.className = 'mt-4 w-full bg-red-500 text-white font-semibold rounded-md py-2 transition';
+        startBtn.disabled = true;
+      }
+    }
+
+    function startQuiz() {
+      if (questions.length === 0) {
+        alert("Questions not loaded yet. Please refresh the page.");
+        return;
+      }
+      playerName = nameInput.value.trim();
+      if (!playerName) return alert("Enter your name first!");
+      currentSet = [...questions].sort(() => 0.5 - Math.random()).slice(0, TOTAL_QUESTIONS);
+      currentIndex = 0;
+      score = 0;
+      nameSection.hidden   = true;
+      resultSection.hidden = true;
+      quizSection.hidden   = false;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      feedback.textContent = "";
+      const q = currentSet[currentIndex];
+      questionText.textContent = q.q;
+      choicesDiv.innerHTML = "";
+      q.choices.forEach((choice, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = choice;
+        btn.className = "w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md px-4 py-2 transition";
+        btn.onclick = () => selectAnswer(idx, btn);
+        choicesDiv.appendChild(btn);
+      });
+      progress.textContent = `Question ${currentIndex + 1} / ${TOTAL_QUESTIONS}`;
+    }
+
+    function selectAnswer(idx, btnEl) {
+      const q = currentSet[currentIndex];
+      const correct = idx === q.answer;
+      choicesDiv.querySelectorAll("button").forEach(b => b.disabled = true);
+      btnEl.classList.toggle("bg-green-600", correct);
+      btnEl.classList.toggle("bg-red-600", !correct);
+      if (correct) {
+        score += POINTS_PER_CORRECT;
+        feedback.textContent = "Correct!";
+        feedback.className = "mt-4 font-semibold text-green-400";
+      } else {
+        feedback.textContent = `Nope! Correct: ${q.choices[q.answer]}`;
+        feedback.className = "mt-4 font-semibold text-red-400";
+        choicesDiv.children[q.answer].classList.add("bg-green-600");
+      }
+      setTimeout(() => {
+        currentIndex++;
+        if (currentIndex < TOTAL_QUESTIONS) {
+          showQuestion();
+        } else {
+          finishQuiz();
+        }
+      }, 1200);
+    }
+
+    function finishQuiz() {
+      saveScore(playerName, score);
+      quizSection.hidden   = true;
+      resultSection.hidden = false;
+      resultTitle.textContent = `You scored ${score}/${TOTAL_QUESTIONS * POINTS_PER_CORRECT}!`;
+      renderLeaderboard();
+    }
+
+    function reset() {
+      nameSection.hidden   = false;
+      quizSection.hidden   = true;
+      resultSection.hidden = true;
+      nameInput.focus();
+    }
+
+    // Load questions when page loads
+    loadQuestions();
+
+    /* ---------- LEADERBOARD ---------- */
+
+    async function saveScore(name, points) {
+      try {
+        // Get current leaderboard
+        const response = await fetch(`${API_BASE}/api/leaderboard`);
+        let scores = {};
+        if (response.ok) {
+          scores = await response.json();
+        }
+        
+        // Update score
+        scores[name] = (scores[name] || 0) + points;
+        
+        // Save back to shared storage
+        await fetch(`${API_BASE}/api/leaderboard`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(scores)
+        });
+        
+        // Refresh leaderboard display
+        await renderLeaderboard();
+      } catch (error) {
+        console.error('Error saving score:', error);
+        // Fallback to localStorage if API fails
+        const store = JSON.parse(localStorage.getItem("mtScores") || "{}");
+        store[name] = (store[name] || 0) + points;
+        localStorage.setItem("mtScores", JSON.stringify(store));
+        renderLeaderboard();
+      }
+    }
+
+    async function renderLeaderboard() {
+      try {
+        const response = await fetch(`${API_BASE}/api/leaderboard`);
+        let store = {};
+        if (response.ok) {
+          store = await response.json();
+        } else {
+          // Fallback to localStorage
+          store = JSON.parse(localStorage.getItem("mtScores") || "{}");
+        }
+        
+        const sorted = Object.entries(store)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
+        
+        leaderboard.innerHTML = "";
+        if (sorted.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "No scores yet - be the first!";
+          li.className = "bg-slate-800 px-3 py-1 rounded text-slate-400";
+          leaderboard.appendChild(li);
+        } else {
+          sorted.forEach(([n, s], idx) => {
+            const li = document.createElement("li");
+            li.textContent = `#${idx + 1} ${n} – ${s} pts`;
+            li.className = "bg-slate-800 px-3 py-1 rounded";
+            leaderboard.appendChild(li);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading leaderboard:', error);
+        // Fallback to localStorage
+        const store = JSON.parse(localStorage.getItem("mtScores") || "{}");
+        const sorted = Object.entries(store)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10);
+        
+        leaderboard.innerHTML = "";
+        sorted.forEach(([n, s], idx) => {
+          const li = document.createElement("li");
+          li.textContent = `#${idx + 1} ${n} – ${s} pts`;
+          li.className = "bg-slate-800 px-3 py-1 rounded";
+          leaderboard.appendChild(li);
+        });
+      }
+    }
+
+    // Auto-refresh leaderboard every 5 seconds for real-time updates
+    setInterval(renderLeaderboard, 5000);
+  </script>
+</body>
+</html>
