@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 const LEADERBOARD_FILE = path.join(__dirname, 'leaderboard.json');
 
 // Configuration for external questions source
-const NETLIFY_QUESTIONS_URL = process.env.QUESTIONS_URL || 'https://your-netlify-url.netlify.app/questions.json';
+const NETLIFY_QUESTIONS_URL = process.env.QUESTIONS_URL || 'https://movies-questions.netlify.app/netlify-questions.json';
 
 // Middleware
 app.use(cors());

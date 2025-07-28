@@ -1,8 +1,6 @@
-# 🎬 Ultra Movies Trivia
+# 🎬 uTech Movies Trivia
 
 A fun and interactive movie trivia game with real-time multiplayer leaderboard functionality!
-
-![Game Screenshot](https://via.placeholder.com/800x400/1e293b/ffffff?text=Ultra+Movies+Trivia+Game)
 
 ## ✨ Features
 
@@ -24,9 +22,9 @@ A fun and interactive movie trivia game with real-time multiplayer leaderboard f
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/ultra-movies-trivia.git
-   cd ultra-movies-trivia
-   ```
+git clone https://github.com/yourusername/utech-movies-trivia.git
+cd utech-movies-trivia
+```
 
 2. **Install dependencies**
    ```bash
@@ -76,21 +74,27 @@ npm run serve
 
 ### Environment Variables
 
-Create a `.env` file (required):
+Create a `.env` file (optional):
 
 ```bash
-# Netlify questions URL (required)
-QUESTIONS_URL=https://your-netlify-site.netlify.app/questions.json
+# Netlify questions URL (optional - uses default if not set)
+QUESTIONS_URL=https://movies-questions.netlify.app/netlify-questions.json
 ```
 
 ### Using External Questions from Netlify (Required)
+**Pre-configured URL**: The server is already configured to use:
+```
+https://movies-questions.netlify.app/netlify-questions.json
+```
+
+**Custom URL** (optional): If you want to use your own questions file:
 1. **Upload your questions.json to Netlify**:
    - Go to [Netlify](https://netlify.com)
    - Create new site → "Deploy manually"
    - Upload your `questions.json` file
-   - Get your public URL: `https://your-site.netlify.app/questions.json`
+   - Get your public URL
 
-2. **Configure your server** (required):
+2. **Configure your server**:
    ```bash
    export QUESTIONS_URL=https://your-site.netlify.app/questions.json
    # Windows:
@@ -123,7 +127,7 @@ Create your `questions.json` file for Netlify:
 ## 📁 Project Structure
 
 ```
-ultra-movies-trivia/
+utech-movies-trivia/
 ├── index.html          # Main game interface
 ├── server.js           # Express server for multiplayer
 ├── questions.json      # Movie trivia questions
@@ -132,17 +136,6 @@ ultra-movies-trivia/
 ├── .gitignore          # Git ignore rules
 └── README.md           # This file
 ```
-
-## 🎨 Screenshots
-
-### Game Interface
-![Game](https://via.placeholder.com/600x300/1e293b/ffffff?text=Game+Interface)
-
-### Leaderboard
-![Leaderboard](https://via.placeholder.com/600x300/1e293b/ffffff?text=Real-time+Leaderboard)
-
-### Mobile View
-![Mobile](https://via.placeholder.com/300x600/1e293b/ffffff?text=Mobile+Responsive)
 
 ## 🤝 Contributing
 
@@ -182,10 +175,12 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 📞 Support
 
 If you encounter any issues or have questions:
-1. Check the [Issues](https://github.com/yourusername/ultra-movies-trivia/issues) page
+1. Check the [Issues](https://github.com/yourusername/utech-movies-trivia/issues) page
 2. Create a new issue with detailed information
 3. Join our community discussions
 
 ---
 
 **Happy Trivia Gaming!** 🎬✨
+
+Made with ❤️ By uTech

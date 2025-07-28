@@ -1,6 +1,6 @@
-# Contributing to Ultra Movies Trivia
+# Contributing to uTech Movies Trivia
 
-Thank you for your interest in contributing to Ultra Movies Trivia! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to uTech Movies Trivia! This document provides guidelines for contributing to the project.
 
 ## 🚀 Getting Started
 
@@ -13,8 +13,8 @@ Thank you for your interest in contributing to Ultra Movies Trivia! This documen
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/yourusername/ultra-movies-trivia.git
-   cd ultra-movies-trivia
+   git clone https://github.com/yourusername/utech-movies-trivia.git
+cd utech-movies-trivia
    ```
 3. Install dependencies:
    ```bash
@@ -157,9 +157,9 @@ Before submitting:
 ## 🆘 Getting Help
 
 ### Resources
-- **Issues**: Check existing [GitHub Issues](https://github.com/yourusername/ultra-movies-trivia/issues)
-- **Discussions**: Join [GitHub Discussions](https://github.com/yourusername/ultra-movies-trivia/discussions)
-- **Wiki**: Read our [Wiki](https://github.com/yourusername/ultra-movies-trivia/wiki)
+- **Issues**: Check existing [GitHub Issues](https://github.com/yourusername/utech-movies-trivia/issues)
+- **Discussions**: Join [GitHub Discussions](https://github.com/yourusername/utech-movies-trivia/discussions)
+- **Wiki**: Read our [Wiki](https://github.com/yourusername/utech-movies-trivia/wiki)
 
 ### Contact
 - **Issues**: Create a new issue for bugs or feature requests
@@ -172,4 +172,4 @@ Contributors will be:
 - **Mentioned in release notes** for new features
 - **Credited in commit history** for all contributions
 
-Thank you for helping make Ultra Movies Trivia better! 🎬✨
+Thank you for helping make uTech Movies Trivia better! 🎬✨

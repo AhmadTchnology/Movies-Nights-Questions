@@ -1,5 +1,5 @@
 {
-  "name": "ultra-movies-trivia",
+  "name": "utech-movies-trivia",
   "version": "1.0.0",
   "description": "A shared movie trivia game with real-time leaderboard",
   "main": "server.js",
@@ -17,6 +17,6 @@
     "nodemon": "^3.0.1"
   },
   "keywords": ["trivia", "movies", "quiz", "multiplayer"],
-  "author": "Ultra Movies",
+  "author": "uTech",
   "license": "MIT"
 }
